@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: MIT-0
 
 # Define params
-# export EKSCLUSTER_NAME=eks-nvme
-# export AWS_REGION=us-east-1
+export EKSCLUSTER_NAME=eks-nvme
+export AWS_REGION=us-east-1
 export EMRCLUSTER_NAME=emr-on-$EKSCLUSTER_NAME
 export ROLE_NAME=${EMRCLUSTER_NAME}-execution-role
 export ACCOUNTID=$(aws sts get-caller-identity --query Account --output text)
@@ -21,8 +21,8 @@ eksctl delete cluster --name $EKSCLUSTER_NAME --region $AWS_REGION
 aws iam detach-role-policy --role-name $ROLE_NAME --policy-arn $POLICY_ARN
 aws iam delete-role --role-name $ROLE_NAME
 aws iam delete-policy --policy-arn $POLICY_ARN
-aws s3 rm s3://$S3TEST_BUCKET --recursive
-aws s3api delete-bucket --bucket $S3TEST_BUCKET
+#aws s3 rm s3://$S3TEST_BUCKET --recursive
+#aws s3api delete-bucket --bucket $S3TEST_BUCKET
 # uncomment it out if use ECR to store the benchmark utility
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
-aws ecr delete-repository --repository-name eks-spark-benchmark --force
+#aws ecr delete-repository --repository-name eks-spark-benchmark --force
