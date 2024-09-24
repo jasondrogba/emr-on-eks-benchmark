@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT-0
 
 # Define params
-export EKSCLUSTER_NAME=eks-nvme
+export EKSCLUSTER_NAME=eks-nvme-alluxio
 export AWS_REGION=us-east-1
 export EMRCLUSTER_NAME=emr-on-$EKSCLUSTER_NAME
 export ROLE_NAME=${EMRCLUSTER_NAME}-execution-role

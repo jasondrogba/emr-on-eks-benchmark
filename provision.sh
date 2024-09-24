@@ -4,10 +4,10 @@
 # // SPDX-License-Identifier: MIT-0
 
 # Define params
- export EKSCLUSTER_NAME=eks-nvme
+ export EKSCLUSTER_NAME=eks-nvme-alluxio
  export AWS_REGION=us-east-1
-export OSS_SPARK_SVCACCT_NAME=oss
-export OSS_NAMESPACE=oss
+export OSS_SPARK_SVCACCT_NAME=spark-operator-spark
+export OSS_NAMESPACE=spark-operator
 export EMR_NAMESPACE=emr
 export EKS_VERSION=1.28
 export EMRCLUSTER_NAME=emr-on-$EKSCLUSTER_NAME
@@ -78,7 +78,7 @@ metadata:
   version: "$EKS_VERSION"
 addons:
   - name: aws-ebs-csi-driver
-  - name: aws-mountpoint-s3-csi-driver
+#  - name: aws-mountpoint-s3-csi-driver
 vpc:
   clusterEndpoints:
       publicAccess: true
@@ -104,16 +104,16 @@ managedNodeGroups:
   - name: mn-od
     availabilityZones: ["${AWS_REGION}b"]
     preBootstrapCommands:
-      - "sleep 5;sudo mkfs.xfs /dev/nvme1n1;sudo mkdir -p /local1;sudo echo /dev/nvme1n1 /local1 xfs defaults,noatime 1 2 >> /etc/fstab"
+      - "sleep 5;sudo mkfs.xfs /dev/nvme1n1;sudo mkdir -p /mnt;sudo echo /dev/nvme1n1 /mnt xfs defaults,noatime 1 2 >> /etc/fstab"
       - "sudo mount -a"
-      - "sudo chown ec2-user:ec2-user /local1"
-    instanceType: r5.2xlarge
+      - "sudo chown ec2-user:ec2-user /mnt"
+    instanceType: c5d.4xlarge
     # ebs optimization is enabled by default
     volumeSize: 20
     volumeType: gp2
     minSize: 1
     desiredCapacity: 1
-    maxSize: 30
+    maxSize: 6
     labels:
       app: sparktest 
     tags:
@@ -217,8 +217,10 @@ helm install nodescaler autoscaler/cluster-autoscaler --namespace kube-system --
 # Install Spark-Operator for the OSS Spark test
 helm repo add spark-operator https://kubeflow.github.io/spark-operator
 helm repo update
-helm install -n $OSS_NAMESPACE spark-operator spark-operator/spark-operator --version 1.1.27 \
-  --set serviceAccounts.spark.create=false --set metrics.enable=false --set webhook.enable=true --set webhook.port=443 --debug
+helm install spark-operator spark-operator/spark-operator --version 1.4.6 \
+   --namespace $OSS_NAMESPACE \
+   --create-namespace \
+   --set webhook.enable=true
 
 #echo "============================================================================="
 #echo "  Upload project examples to S3 ......"
