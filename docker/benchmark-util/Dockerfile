@@ -1,7 +1,7 @@
 # // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # // SPDX-License-Identifier: MIT-0
-ARG SPARK_BASE_IMAGE=public.ecr.aws/w5m3x7g4/spark:3.1.2_hadoop_3.3.1
-
+#ARG SPARK_BASE_IMAGE=public.ecr.aws/w5m3x7g4/spark:3.1.2_hadoop_3.3.1
+ARG SPARK_BASE_IMAGE=spark:3.5.0
 FROM amazonlinux:2 AS tpc-toolkit
 
 ENV TPCDS_KIT_VERSION="master"
@@ -31,10 +31,13 @@ RUN cd /tmp/emr-on-eks-benchmark/delta-perf && sbt assembly
 
 FROM ${SPARK_BASE_IMAGE}
 USER root
+RUN mkdir -p /opt/alluxio/client && mkdir -p /opt/alluxio/lib
 
 COPY --from=tpc-toolkit /tmp/tpcds-kit/tools /opt/tpcds-kit/tools
 COPY --from=sbtenv /tmp/emr-on-eks-benchmark/benchmark/target/scala-2.12/*jar ${SPARK_HOME}/examples/jars/
 COPY --from=sbtenv /tmp/emr-on-eks-benchmark/delta-perf/target/scala-2.12/*jar ${SPARK_HOME}/examples/delta/delta-benchmarks.jar
+COPY alluxio-DA-3.2-8.0.0-RC3-client.jar /opt/alluxio/client
+COPY alluxio-underfs-s3a-DA-3.2-8.0.0-RC3.jar /opt/alluxio/lib
 # COPY --from=sbtenv /tmp/emr-on-eks-benchmark/delta-perf/scripts/ ${SPARK_HOME}/examples/delta/scripts/
 # COPY --from=sbtenv /tmp/emr-on-eks-benchmark/delta-perf/run-benchmark.py ${SPARK_HOME}/examples/delta/
 # RUN chown -R hadoop:hadoop ${SPARK_HOME}/examples/delta
