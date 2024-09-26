@@ -94,12 +94,12 @@ iam:
     wellKnownPolicies:
       autoScaler: true
     roleName: eksctl-cluster-autoscaler-role
-  - metadata:
-      name: $OSS_SPARK_SVCACCT_NAME
-      namespace: $OSS_NAMESPACE
-      labels: {aws-usage: "application"}
-    attachPolicyARNs:
-    - arn:aws:iam::${ACCOUNTID}:policy/$ROLE_NAME-policy
+#  - metadata:
+#      name: $OSS_SPARK_SVCACCT_NAME
+#      namespace: $OSS_NAMESPACE
+#      labels: {aws-usage: "application"}
+#    attachPolicyARNs:
+#    - arn:aws:iam::${ACCOUNTID}:policy/$ROLE_NAME-policy
 managedNodeGroups:
   - name: mn-od
     availabilityZones: ["${AWS_REGION}b"]
