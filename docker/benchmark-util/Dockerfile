@@ -1,7 +1,6 @@
 # // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # // SPDX-License-Identifier: MIT-0
-#ARG SPARK_BASE_IMAGE=public.ecr.aws/w5m3x7g4/spark:3.1.2_hadoop_3.3.1
-ARG SPARK_BASE_IMAGE=spark:3.5.0
+ARG SPARK_BASE_IMAGE=public.ecr.aws/w5m3x7g4/spark:3.1.2_hadoop_3.3.1
 FROM amazonlinux:2 AS tpc-toolkit
 
 ENV TPCDS_KIT_VERSION="master"
